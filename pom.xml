@@ -46,6 +46,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/dist</outputDirectory>
+                            <finalName>lemma</finalName>
                         </configuration>
                     </execution>
                 </executions>
@@ -76,6 +77,23 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptor>src/assembly/processing-lib.xml</descriptor>
+                    <finalName>processing-lemma-lib</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
