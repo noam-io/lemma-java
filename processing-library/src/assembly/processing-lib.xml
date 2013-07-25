@@ -8,14 +8,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>target/dist</directory>
-            <outputDirectory>lemma/library</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>target/dist/lib</directory>
+            <directory>target/dist/library</directory>
             <outputDirectory>lemma/library</outputDirectory>
             <includes>
                 <include>*.jar</include>
