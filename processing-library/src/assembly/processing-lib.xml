@@ -21,6 +21,11 @@
                 <include>**</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <includes>
+                <include>README*</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
  </assembly>
