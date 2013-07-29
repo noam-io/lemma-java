@@ -14,7 +14,7 @@ public class MaxLemma extends MaxObject implements EventHandler{
     private String LEMMA_NAME = "max-lemma";
     private String[] HEARS = null;
 
-    public MaxLemma(Atom[] args) {
+    public MaxLemma() {
         declareAttribute("HEARS");
         declareAttribute("BROADCAST_PORT");
         declareAttribute("LISTEN_PORT");
@@ -39,7 +39,7 @@ public class MaxLemma extends MaxObject implements EventHandler{
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                outlet(0, "Congratulations!");
+                System.out.println("Starting MaxLemma...");
                 while (Thread.currentThread() == thread) {
                     lemma.run();
                 }
