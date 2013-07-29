@@ -14,5 +14,13 @@
                 <include>*.jar</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>examples</directory>
+            <outputDirectory>lemma/examples</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
     </fileSets>
+
  </assembly>
