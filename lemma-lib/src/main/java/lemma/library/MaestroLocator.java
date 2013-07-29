@@ -30,7 +30,7 @@ public class MaestroLocator{
 		parsePacket();
 	}
 	public boolean parsePacket(){
-		if (incomingPacket != null) {
+		if (incomingPacket != null && incomingPacket.message != null) {
             Pattern p = Pattern.compile("\\[Maestro@(\\d+)\\]");
             Matcher m = p.matcher(incomingPacket.message);
             boolean b = m.matches();

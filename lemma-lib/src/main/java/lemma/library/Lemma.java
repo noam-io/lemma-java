@@ -36,11 +36,8 @@ public class Lemma {
         filter = new EventFilter();
     }
 
-	public void begin(){
-		maestroReceiver.run();
-	}
 	public void run(){
-		tryConnectingWithMaestro();
+        tryConnectingWithMaestro();
 		handleIncomingConnections();
 	}
 	private void tryConnectingWithMaestro(){
@@ -116,5 +113,11 @@ public class Lemma {
             return false;
         }
         return true;
+    }
+
+    public void stop() {
+        maestroLocator.close();
+        maestroReceiver.stop();
+        maestroConnection.stop();
     }
 }

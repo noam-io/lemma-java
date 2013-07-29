@@ -111,8 +111,8 @@ public class MessageBuilder {
 		add( root, hears );
 		add( root, plays );
 
-		add( root, "processing");
-		add( root, "0.01");
+		add( root, "java");
+		add( root, "1.0");
 
 		return root.toString();
 	}

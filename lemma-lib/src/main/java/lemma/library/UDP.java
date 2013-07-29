@@ -211,7 +211,7 @@ public class UDP implements Runnable {
         String ip	= address();
 
         // stop listening if needed
-        //listen( false );
+        listen( false );
 
         // close the socket
         try {

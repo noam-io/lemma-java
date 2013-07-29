@@ -51,7 +51,7 @@ public class TCPServer implements Runnable {
   Object parent;
   Method serverEventMethod;
 
-  Thread thread;
+  volatile Thread thread;
   ServerSocket server;
   int port;
   
@@ -75,7 +75,6 @@ public class TCPServer implements Runnable {
 
       thread = new Thread(this);
       thread.start();
-
 
       // reflection to check whether host applet has a call for
       // public void serverEvent(TCPServer s, TCPClient c);
@@ -207,9 +206,10 @@ public class TCPServer implements Runnable {
    * Disconnect all clients and stop the server: internal use only.
    */
   public void dispose() {
-    thread = null;
 
-    if (clients != null) {
+      thread = null;
+
+      if (clients != null) {
       for (int i = 0; i < clientCount; i++) {
         disconnect(clients[i]);
       }
@@ -229,8 +229,9 @@ public class TCPServer implements Runnable {
 
 
   public void run() {
-    while (Thread.currentThread() == thread) {
+    while (!Thread.currentThread().isInterrupted() && Thread.currentThread() == thread) {
       try {
+
         Socket socket = server.accept();
         TCPClient client = new TCPClient(parent, socket);
         synchronized (clients) {
