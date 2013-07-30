@@ -19,15 +19,15 @@ public class Lemma {
 	private	MessageSender messageSender;
 	private	EventFilter filter;
 
-	public Lemma( Object parent, String lemmaID, int port ){
-		this(parent, lemmaID, port, LISTEN_PORT);
+	public Lemma( Object parent, String lemmaID, int broadcastPort ){
+		this(parent, lemmaID, broadcastPort, LISTEN_PORT);
 	}
 
-    public Lemma( Object parent, String lemmaID, int port, int listenPort ){
+    public Lemma( Object parent, String lemmaID, int broadcastPort, int listenPort ){
         this.parent = parent;
 
         id = lemmaID;
-        BROADCAST_PORT = port;
+        BROADCAST_PORT = broadcastPort;
         LISTEN_PORT = listenPort;
 
         maestroReceiver = new TCPServer( parent, LISTEN_PORT );

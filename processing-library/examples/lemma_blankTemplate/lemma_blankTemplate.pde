@@ -1,11 +1,13 @@
-import lemma.library.*;
+import lemma.library.Event;
+import lemma.library.EventHandler;
+import lemma.library.Lemma;
 
 //----------------------------------------------------------------------------------------------------------------//
 
 Lemma lemma;
 
 void setup(){
-  lemma = new Lemma(this, "lemmaID", 9934);  // <-- Maestro Port
+  lemma = new Lemma(this, "lemmaID", 1030, 8833);  // <-- Maestro Port
   // register as listener ... e.g. [lemma.hear("eventName", new MyEventHandler())]
 }
 void draw(){

@@ -2,7 +2,9 @@
 // 1. Import core library + Event (Helps IDE parse "EventHandler.Callback(Event event)" below)
 //------------------------------------------------------------------------------------------------//
 
-import lemma.library.*;
+import lemma.library.Event;
+import lemma.library.EventHandler;
+import lemma.library.Lemma;
 
 //------------------------------------------------------------------------------------------------//
 // 2. Instance one or more Lemmas. Construct, setup listeners, run in loop.
@@ -12,13 +14,13 @@ Lemma lemma;
 int messagesSent = 1;
 
 void setup(){
-  lemma = new Lemma(this, "test", 9934);
+  lemma = new Lemma(this, "test", 1030, 8833);
   // Listen for an Event
-  lemma.hear("messagesSent", new MyEventHandler(){);
+  lemma.hear("messagesSent", new MyEventHandler());
 }
 void draw(){
   // Try to send an event
-  if ( sendEvent("messagesSent", messagesSent) ){
+  if ( lemma.sendEvent("messagesSent", messagesSent) ){
     messagesSent++;
   }
   //connect and handle incoming events
