@@ -120,4 +120,8 @@ public class Lemma {
         maestroReceiver.stop();
         maestroConnection.stop();
     }
+
+    public boolean connected() {
+        return messageSender.isConnected();
+    }
 }
