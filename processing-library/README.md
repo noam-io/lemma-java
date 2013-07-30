@@ -9,7 +9,7 @@ A packaged library for [Processing](http://processing.org/) wrapping the Java li
         
 #### Install 
 
-Unzip target/lemma-bin.zip and 
+Unzip target/processing-lemma-lib-bin.zip
 
 Copy the contents into the libraries folder of the Processing sketchbook location on your computer. You will need to create the libraries folder if this is your first contributed library.
 
