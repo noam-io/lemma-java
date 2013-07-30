@@ -1,37 +1,22 @@
 import lemma.library.*;
-import lemma.library.Event;
 
 //----------------------------------------------------------------------------------------------------------------//
 
-ConcreteLemma lemma;
+Lemma lemma;
 
 void setup(){
-  lemma = new ConcreteLemma(this, "lemmaID", 9934);  // <-- Maestro Port
-  lemma.begin();
+  lemma = new Lemma(this, "lemmaID", 9934);  // <-- Maestro Port
+  // register as listener ... e.g. [lemma.hear("eventName", new MyEventHandler())]
 }
 void draw(){
+  // send events ... e.g. [lemma.sendEvent("eventName", eventValue)]
   lemma.run();
 }
 
 //----------------------------------------------------------------------------------------------------------------//
 
-class ConcreteLemma extends Lemma implements EventHandler {
-  
-  ConcreteLemma(PApplet parent, String lemmaID, int port){
-    super(parent, lemmaID, port);
-  }
-  
-  void begin(){                                               
-    // register as listener ... e.g. [hear("eventName", this)]
-    super.begin();
-  }
-  
-  void run(){
-    // send events ... e.g. [sendEvent("eventName", eventValue)]
-    super.run();
-  }
-  
-  void callback(Event event){
+class MyEventHandler implements EventHandler {
+  public void callback(Event event){
     // handle event ... e.g. [Event.name / Event.stringValue / Event.intValue / Event.floatValue]
   }
 }

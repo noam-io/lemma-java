@@ -3,19 +3,25 @@
 //------------------------------------------------------------------------------------------------//
 
 import lemma.library.*;
-import lemma.library.Event;
 
 //------------------------------------------------------------------------------------------------//
-// 2. Instance one or more ConcreteLemmas. Construct, begin, run in loop.
+// 2. Instance one or more Lemmas. Construct, setup listeners, run in loop.
 //------------------------------------------------------------------------------------------------//
 
-ConcreteLemma lemma;
+Lemma lemma;
+int messagesSent = 1;
 
 void setup(){
-  lemma = new ConcreteLemma(this, "test", 9934);
-  lemma.begin();
+  lemma = new Lemma(this, "test", 9934);
+  // Listen for an Event
+  lemma.hear("messagesSent", new MyEventHandler(){);
 }
 void draw(){
+  // Try to send an event
+  if ( sendEvent("messagesSent", messagesSent) ){
+    messagesSent++;
+  }
+  //connect and handle incoming events
   lemma.run();
 }
 
@@ -23,27 +29,10 @@ void draw(){
 // 3. Extend Lemma to implement EventHandler interface (Processing's Main sketch can't implement interfaces...)
 //----------------------------------------------------------------------------------------------------------------//
 
-class ConcreteLemma extends Lemma implements EventHandler {
-    
-  int messagesSent;
-  
-  ConcreteLemma(PApplet parent, String lemmaID, int port){    // Construct parent 
-    super(parent, lemmaID, port);
-  }
-  
-  void begin(){                                               
-    hear("messagesSent", this);                               // Register to recieve events
-    super.begin();                                            // Initialize parent
-  }
-  
-  void run(){
-    if ( sendEvent("messagesSent", messagesSent) ){
-      messagesSent++;
-    }
-    super.run();                                              // Run Parent
-  }
-  
-  void callback(Event event){                                 // Called each time we recieve an event
+class MyEventHandler implements EventHandler {
+
+  // Called each time we receive an event
+  public void callback(Event event){
     System.out.println("Caught event : " + event.name + " : " + event.stringValue);
   }
 }
