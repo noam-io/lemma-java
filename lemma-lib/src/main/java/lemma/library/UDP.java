@@ -159,9 +159,9 @@ public class UDP implements Runnable {
             if ( !addr.isMulticastAddress() ) {
                 ucSocket = new DatagramSocket(null);	// as broadcast
                 ucSocket.setReuseAddress(true);
-                ucSocket.bind(new InetSocketAddress(addr, port));
+                ucSocket.bind(new InetSocketAddress(port));
 
-                log( "bound socket to host:"+address()+", port: "+port() );
+                log( "bound socket to port: "+port() );
             }
             else {
                 mcSocket = new MulticastSocket( port );			// as multicast
