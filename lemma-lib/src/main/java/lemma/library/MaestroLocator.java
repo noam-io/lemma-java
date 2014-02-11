@@ -36,7 +36,6 @@ public class MaestroLocator {
 
     public boolean parsePacket() {
         if (incomingPacket != null && incomingPacket.message != null) {
-            System.out.println(incomingPacket.message);
             String serverNamePattern = "[\\w\\s.\\-]+";
             Pattern p = Pattern.compile(String.format("\\[%s@(%s),'(%s)'\\]",
                                                       "Maestro",
