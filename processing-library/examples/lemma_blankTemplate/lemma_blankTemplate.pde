@@ -7,7 +7,7 @@ import lemma.library.Lemma;
 Lemma lemma;
 
 void setup(){
-  lemma = new Lemma(this, "lemmaID", 1030, 8833);  // <-- Maestro Port
+  lemma = new Lemma(this, "lemmaID", 1030, 8833);  // <-- Moderator Port
   // register as listener ... e.g. [lemma.hear("eventName", new MyEventHandler())]
 }
 void draw(){

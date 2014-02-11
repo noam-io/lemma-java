@@ -1,113 +1,113 @@
 package lemma.library;
 
-import org.json.*;
+import org.json.JSONObject;
 
 public class Lemma {
-	public final static String VERSION = "##library.prettyVersion##";
+    public final static String VERSION = "##library.prettyVersion##";
+    private final int listenPort;
+    private final int broadcastPort;
+    private final String id;
+    Object parent;
+    private TCPClient moderatorClient;
+    private TCPServer eventServer;
+    private ModeratorLocator moderatorLocator;
+    private MessageSender messageSender;
+    private EventFilter filter;
 
-	Object parent;
+    public Lemma(Object parent, String lemmaID, int broadcastPort) {
+        this(parent, lemmaID, broadcastPort, 8833);
+    }
 
-	private static int LISTEN_PORT = 8833;
-	private static int BROADCAST_PORT;
-
-	private static String id;
-
-	private TCPClient maestroConnection; 	// initialized on maestro pickup
-
-	private TCPServer maestroReceiver;
-	private	MaestroLocator maestroLocator;
-	private	MessageSender messageSender;
-	private	EventFilter filter;
-
-	public Lemma( Object parent, String lemmaID, int broadcastPort ){
-		this(parent, lemmaID, broadcastPort, LISTEN_PORT);
-	}
-
-    public Lemma( Object parent, String lemmaID, int broadcastPort, int listenPort ){
+    public Lemma(Object parent, String lemmaID, int broadcastPort, int listenPort) {
         this.parent = parent;
 
-        id = lemmaID;
-        BROADCAST_PORT = broadcastPort;
-        LISTEN_PORT = listenPort;
+        this.id = lemmaID;
+        this.broadcastPort = broadcastPort;
+        this.listenPort = listenPort;
 
-        maestroReceiver = new TCPServer( parent, LISTEN_PORT );
-        maestroLocator = new MaestroLocator(BROADCAST_PORT);
+        eventServer = new TCPServer(parent, this.listenPort);
+        moderatorLocator = new ModeratorLocator(this.broadcastPort);
         messageSender = new MessageSender(id);
         filter = new EventFilter();
     }
 
-	public void run(){
-        tryConnectingWithMaestro();
-		handleIncomingConnections();
-	}
-	private void tryConnectingWithMaestro(){
-		if (!messageSender.isConnected()){ 									// If we don't have a TCP connection
-			messageSender.stop();              								// Reset the sender
+    public void run() {
+        tryConnectingToModerator();
+        handleIncomingConnections();
+    }
 
-			maestroLocator.tryLocate();
-			if (maestroLocator.foundMaestro()){  							// If not already located
-				String maestroIp = maestroLocator.maestroIp();     		// Save Maestro Parameters
-				int maestroPort = maestroLocator.maestroPort();
+    private void tryConnectingToModerator() {
+        if (!messageSender.isConnected()) {
+            messageSender.stop();
 
-				System.out.println("Attempting connection to Maestro @ " + maestroIp + " : " + maestroPort);
-				maestroConnection = new TCPClient( parent, maestroIp, maestroPort );
+            moderatorLocator.tryLocate();
+            if (moderatorLocator.foundModerator()) {
+                String moderatorIp = moderatorLocator.moderatorIp();
+                int moderatorPort = moderatorLocator.moderatorPort();
 
-				if (maestroConnection.active()){
-					System.out.println("Maestro Connection established");
-					messageSender.setClient(maestroConnection);
-				}
-				else{
-					maestroLocator.reset();
-					System.out.println("Maestro Connection failed / dropped");
-				}
+                System.out.println("Attempting connection to Moderator @ " + moderatorIp + " : " + moderatorPort);
+                moderatorClient = new TCPClient(parent, moderatorIp, moderatorPort);
 
-				messageSender.sendRegistration( LISTEN_PORT, filter.events(), filter.count(), new String[0], 0 );
-			}
-		}
-	}
-	private void handleIncomingConnections(){
-		TCPClient incomingClient = maestroReceiver.available();
+                if (moderatorClient.active()) {
+                    System.out.println("Moderator Connection established");
+                    messageSender.setClient(moderatorClient);
+                } else {
+                    moderatorLocator.reset();
+                    System.out.println("Moderator Connection failed / dropped");
+                }
 
-		if (incomingClient != null) {
-			TCPReader reader = new TCPReader( incomingClient );
-			String message = reader.read();
+                messageSender.sendRegistration(listenPort, filter.events(), filter.count(), new String[0], 0);
+            }
+        }
+    }
 
-			if (message != "") {
-				Event event = MessageParser.parse( message );
-				filter.handle( event );
-			}
-		}
-	}
+    private void handleIncomingConnections() {
+        TCPClient incomingClient = eventServer.available();
 
-	public void hear( String name, EventHandler callback ){
-		filter.add(name, callback);
-	}
-	public boolean sendEvent( String name, String value ){
-		if (!messageSender.sendEvent( name, value )){
-			System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
-			messageSender.stop();
-			return false;
-		}
-		return true;
-	}
-	public boolean sendEvent( String name, int value ){
-		if (!messageSender.sendEvent( name, value )){
-			System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
-			messageSender.stop();
-			return false;
-		}
-		return true;
-	}
-	public boolean sendEvent( String name, double value ){
-		if (!messageSender.sendEvent( name, value )){
-			System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
-			messageSender.stop();
-			return false;
-		}
-		return true;
-	}
-    public boolean sendEvent( String name, JSONObject value ){
-        if (!messageSender.sendEvent( name, value )){
+        if (incomingClient != null) {
+            TCPReader reader = new TCPReader(incomingClient);
+            String message = reader.read();
+
+            if (!message.equals("")) {
+                Event event = MessageParser.parse(message);
+                filter.handle(event);
+            }
+        }
+    }
+
+    public void hear(String name, EventHandler callback) {
+        filter.add(name, callback);
+    }
+
+    public boolean sendEvent(String name, String value) {
+        if (!messageSender.sendEvent(name, value)) {
+            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendEvent(String name, int value) {
+        if (!messageSender.sendEvent(name, value)) {
+            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendEvent(String name, double value) {
+        if (!messageSender.sendEvent(name, value)) {
+            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendEvent(String name, JSONObject value) {
+        if (!messageSender.sendEvent(name, value)) {
             System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
             return false;
@@ -116,9 +116,9 @@ public class Lemma {
     }
 
     public void stop() {
-        maestroLocator.close();
-        maestroReceiver.stop();
-        maestroConnection.stop();
+        moderatorLocator.close();
+        eventServer.stop();
+        moderatorClient.stop();
     }
 
     public boolean connected() {
