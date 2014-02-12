@@ -32,8 +32,8 @@ public class Lemma {
 
     public static void main(String[] args) {
         Lemma lemma = new Lemma(new Object(), "test", "Noam");
+        int messagesSent = 0;
         while(true) {
-            int messagesSent = 0;
             if (lemma.sendEvent("messagesSent", messagesSent)) {
                 messagesSent++;
             }
