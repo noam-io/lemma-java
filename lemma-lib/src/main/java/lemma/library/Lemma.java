@@ -2,11 +2,12 @@ package lemma.library;
 
 import org.json.JSONObject;
 
+import java.util.logging.Level;
+
 public class Lemma {
     public final static String VERSION = "##library.prettyVersion##";
-    private final int listenPort;
-    private final int broadcastPort;
-    private final String id;
+    public final int tcpListenPort;
+    NoamLogger logger = NoamLogger.instance();
     Object parent;
     private TCPClient moderatorClient;
     private TCPServer eventServer;
@@ -14,21 +15,35 @@ public class Lemma {
     private MessageSender messageSender;
     private EventFilter filter;
 
-    public Lemma(Object parent, String lemmaID, int broadcastPort) {
-        this(parent, lemmaID, broadcastPort, 8833);
+    public Lemma(Object parent, String lemmaID, String desiredServerName) {
+        this(parent, lemmaID, desiredServerName, Level.ALL);
     }
 
-    public Lemma(Object parent, String lemmaID, int broadcastPort, int listenPort) {
+    public Lemma(Object parent, String lemmaID, String desiredServerName, Level level) {
         this.parent = parent;
+        logger.setLevel(level);
+        eventServer = new TCPServer(parent, 0);
+        this.tcpListenPort = eventServer.server.getLocalPort();
 
-        this.id = lemmaID;
-        this.broadcastPort = broadcastPort;
-        this.listenPort = listenPort;
-
-        eventServer = new TCPServer(parent, this.listenPort);
-        moderatorLocator = new ModeratorLocator(this.broadcastPort);
-        messageSender = new MessageSender(id);
+        moderatorLocator = new ModeratorLocator(lemmaID, desiredServerName);
+        messageSender = new MessageSender(lemmaID);
         filter = new EventFilter();
+    }
+
+    public static void main(String[] args) {
+        Lemma lemma = new Lemma(new Object(), "test", "Noam");
+        while(true) {
+            int messagesSent = 0;
+            if (lemma.sendEvent("messagesSent", messagesSent)) {
+                messagesSent++;
+            }
+            lemma.run();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void run() {
@@ -45,18 +60,18 @@ public class Lemma {
                 String moderatorIp = moderatorLocator.moderatorIp();
                 int moderatorPort = moderatorLocator.moderatorPort();
 
-                System.out.println("Attempting connection to Moderator @ " + moderatorIp + " : " + moderatorPort);
+                logger.info(this.getClass(), "Attempting connection to Moderator @ " + moderatorIp + " : " + moderatorPort);
                 moderatorClient = new TCPClient(parent, moderatorIp, moderatorPort);
 
                 if (moderatorClient.active()) {
-                    System.out.println("Moderator Connection established");
+                    logger.info(this.getClass(), "Moderator Connection established");
                     messageSender.setClient(moderatorClient);
                 } else {
                     moderatorLocator.reset();
-                    System.out.println("Moderator Connection failed / dropped");
+                    logger.warn(this.getClass(), "Moderator Connection failed / dropped");
                 }
 
-                messageSender.sendRegistration(listenPort, filter.events(), filter.count(), new String[0], 0);
+                messageSender.sendRegistration(tcpListenPort, filter.events(), filter.count(), new String[0], 0);
             }
         }
     }
@@ -69,7 +84,7 @@ public class Lemma {
             String message = reader.read();
 
             if (!message.equals("")) {
-                Event event = MessageParser.parse(message);
+                Event event = MessageParser.parseEvent(message);
                 filter.handle(event);
             }
         }
@@ -81,7 +96,7 @@ public class Lemma {
 
     public boolean sendEvent(String name, String value) {
         if (!messageSender.sendEvent(name, value)) {
-            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
             return false;
         }
@@ -90,7 +105,7 @@ public class Lemma {
 
     public boolean sendEvent(String name, int value) {
         if (!messageSender.sendEvent(name, value)) {
-            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
             return false;
         }
@@ -99,7 +114,7 @@ public class Lemma {
 
     public boolean sendEvent(String name, double value) {
         if (!messageSender.sendEvent(name, value)) {
-            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
             return false;
         }
@@ -108,7 +123,7 @@ public class Lemma {
 
     public boolean sendEvent(String name, JSONObject value) {
         if (!messageSender.sendEvent(name, value)) {
-            System.out.println("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
             return false;
         }

@@ -3,6 +3,7 @@ package lemma.library;
 import org.json.JSONObject;
 
 public class MessageSender {
+    private static NoamLogger logger = NoamLogger.instance();
 
 	public MessageBuilder messageBuilder;
 	public TCPClient outboundClient;
@@ -60,7 +61,7 @@ public class MessageSender {
 		if (this.isConnected()){
 			String encoded = TCPProtocol.encode( message );
 			outboundClient.write(encoded); 		// Missing check here? Was it written?
-			System.out.println("Sent event : " + encoded);
+			logger.debug(this.getClass(), "Sent event : " + encoded);
 			return true;
 		}
 		else {

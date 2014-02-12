@@ -9,8 +9,6 @@ public class MaxLemma extends MaxObject implements EventHandler{
 
     private Lemma lemma = null;
     private volatile Thread thread = null;
-    private int BROADCAST_PORT= 1030;
-    private int LISTEN_PORT = 7788;
     private String LEMMA_NAME = "max-lemma";
     private String[] HEARS = null;
 
@@ -29,7 +27,7 @@ public class MaxLemma extends MaxObject implements EventHandler{
         if (active()) {
            dispose();
         }
-        lemma = new Lemma(this, LEMMA_NAME, BROADCAST_PORT, LISTEN_PORT);
+        lemma = new Lemma(this, LEMMA_NAME, "");
 
         if (HEARS != null) {
             for (String messageName : HEARS) {
