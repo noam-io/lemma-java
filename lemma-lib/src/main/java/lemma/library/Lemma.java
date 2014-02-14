@@ -121,6 +121,15 @@ public class Lemma {
         return true;
     }
 
+    public boolean sendEvent(String name, float value) {
+        if (!messageSender.sendEvent(name, value)) {
+            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
     public boolean sendEvent(String name, JSONObject value) {
         if (!messageSender.sendEvent(name, value)) {
             logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");

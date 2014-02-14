@@ -51,6 +51,11 @@ public class MessageSender {
 		boolean result = sendMessage( eventMessage );
 		return result;
 	}
+	public boolean sendEvent( String name, float value ){
+		String eventMessage = messageBuilder.buildEvent( name, value );
+		boolean result = sendMessage( eventMessage );
+		return result;
+	}
     public boolean sendEvent( String name, JSONObject value ){
         String eventMessage = messageBuilder.buildEvent( name, value );
         boolean result = sendMessage( eventMessage );
