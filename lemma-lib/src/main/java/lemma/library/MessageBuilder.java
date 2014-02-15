@@ -15,86 +15,26 @@ public class MessageBuilder {
         this.lemmaID = lemmaId;
     }
 
-    public static void add(JSONArray root, String value) {
+    public static void add(JSONArray root, Object value) {
         try {
-            root.put(value);
-        } catch (Exception e) {
-            logger.warn(MessageBuilder.class, "Couldn't add string — " + value + " - to array : " + e);
-        }
-    }
-
-    public static void add(JSONArray root, int value) {
-        try {
-            root.put(value);
-        } catch (Exception e) {
-            logger.warn(MessageBuilder.class, "Couldn't add int — " + value + " - to array : " + e);
-        }
-    }
-
-    public static void add(JSONArray root, double value) {
-        try {
-            root.put(value);
-        } catch (Exception e) {
-            logger.warn(MessageBuilder.class, "Couldn't add double — " + value + " - to array : " + e);
-        }
-    }
-
-    public static void add(JSONArray root, JSONObject value) {
-        try {
-            root.put(value);
-        } catch (Exception e) {
-            logger.warn(MessageBuilder.class, "Couldn't add JSONObject — " + value + " - to array : " + e);
-        }
-    }
-
-    public static void add(JSONArray root, String[] values) {
-        try {
-            JSONArray result = new JSONArray();
-            for (int i = 0; i < values.length; i++) {
-                if (!values[i].equals("")) {
-                    result.put(values[i]);
+            if(value instanceof Object[]){
+                Object[] values = (Object[])value;
+                JSONArray result = new JSONArray();
+                for (int i = 0; i < values.length; i++) {
+                    if (!values[i].equals("")) {
+                        result.put(values[i]);
+                    }
                 }
+                root.put(result);
+            } else {
+                root.put(value);
             }
-            root.put(result);
         } catch (Exception e) {
-            logger.warn(MessageBuilder.class, "Couldn't add array value — " + values[0] + " - to array : " + e);
+            logger.warn(MessageBuilder.class, "Couldn't add " + value.getClass() + " — " + value + " - to array : " + e);
         }
     }
 
-    public String buildEvent(final String name, final String value) {
-        JSONArray root = new JSONArray();
-
-        add(root, "event");
-        add(root, lemmaID);
-        add(root, name);
-        add(root, value);
-
-        return root.toString();
-    }
-
-    public String buildEvent(final String name, int value) {
-        JSONArray root = new JSONArray();
-
-        add(root, "event");
-        add(root, lemmaID);
-        add(root, name);
-        add(root, value);
-
-        return root.toString();
-    }
-
-    public String buildEvent(final String name, double value) {
-        JSONArray root = new JSONArray();
-
-        add(root, "event");
-        add(root, lemmaID);
-        add(root, name);
-        add(root, value);
-
-        return root.toString();
-    }
-
-    public String buildEvent(final String name, JSONObject value) {
+    public String buildEvent(final String name, Object value) {
         JSONArray root = new JSONArray();
 
         add(root, "event");

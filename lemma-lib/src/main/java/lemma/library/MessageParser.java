@@ -9,27 +9,21 @@ public class MessageParser {
         try {
             JSONArray messageArray = new JSONArray(message);
             String eventName = messageArray.getString(2);
-            Object eventValue = messageArray.get(3);
 
             Event result;
-
-            if (eventValue instanceof Integer) {
-                int val = (Integer) eventValue;
-                result = new Event(eventName, val);
-                return result;
-            } else if (eventValue instanceof Float) {
-                float val = (Float) eventValue;
-                result = new Event(eventName, val);
-                return result;
-            } else if (eventValue instanceof Double) {
-                double val = (Double) eventValue;
-                result = new Event(eventName, (float) val);
-                return result;
-            } else {
-                String val = eventValue.toString();
-                result = new Event(eventName, val);
-                return result;
+            try {
+                JSONArray subArray = messageArray.getJSONArray(3);
+                Object[] eventValues = new Object[subArray.length()];
+                for(int i = 0; i < subArray.length(); i++){
+                    eventValues[i] = subArray.get(i);
+                }
+                result = new Event(eventName, eventValues);
+            } catch(org.json.JSONException e){
+                Object eventValue = messageArray.get(3);
+                result = new Event(eventName, eventValue);
             }
+            
+            return result;
         } catch (org.json.JSONException e) {
             logger.warn(MessageParser.class, "Failed to parse event message : " + e);
             return null;

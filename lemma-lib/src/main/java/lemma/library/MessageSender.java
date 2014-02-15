@@ -36,26 +36,11 @@ public class MessageSender {
 		boolean result = sendMessage( registrationMessage );
 		return result;
 	}
-	public boolean sendEvent( String name, String value ){
+	public boolean sendEvent( String name, Object value ){
 		String eventMessage = messageBuilder.buildEvent( name, value );
 		boolean result = sendMessage( eventMessage );
 		return result;
 	}
-	public boolean sendEvent( String name, int value ){
-		String eventMessage = messageBuilder.buildEvent( name, value );
-		boolean result = sendMessage( eventMessage );
-		return result;
-	}
-	public boolean sendEvent( String name, double value ){
-		String eventMessage = messageBuilder.buildEvent( name, value );
-		boolean result = sendMessage( eventMessage );
-		return result;
-	}
-    public boolean sendEvent( String name, JSONObject value ){
-        String eventMessage = messageBuilder.buildEvent( name, value );
-        boolean result = sendMessage( eventMessage );
-        return result;
-    }
 
     private boolean sendMessage( String message ){
 		if (this.isConnected()){

@@ -94,34 +94,7 @@ public class Lemma {
         filter.add(name, callback);
     }
 
-    public boolean sendEvent(String name, String value) {
-        if (!messageSender.sendEvent(name, value)) {
-            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
-            messageSender.stop();
-            return false;
-        }
-        return true;
-    }
-
-    public boolean sendEvent(String name, int value) {
-        if (!messageSender.sendEvent(name, value)) {
-            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
-            messageSender.stop();
-            return false;
-        }
-        return true;
-    }
-
-    public boolean sendEvent(String name, double value) {
-        if (!messageSender.sendEvent(name, value)) {
-            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
-            messageSender.stop();
-            return false;
-        }
-        return true;
-    }
-
-    public boolean sendEvent(String name, JSONObject value) {
+    public boolean sendEvent(String name, Object value) {
         if (!messageSender.sendEvent(name, value)) {
             logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
