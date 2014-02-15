@@ -8,9 +8,16 @@ import lemma.library.Lemma;
 
 //------------------------------------------------------------------------------------------------//
 // 2. Instance one or more Lemmas. Construct, setup listeners, run in loop.
+//    If roomName is left blank, the lemma is a free agent and may be grabbed
+//    by any room. Otherwise, it will only join a server with the given roomName.   
 //------------------------------------------------------------------------------------------------//
+String lemmaName = "AllTypesProcessingLemma";
+String roomName = "";
 
 Lemma lemma;
+
+
+// Stores for the various types of values
 String messageString = "Hello";
 boolean messageBool = true;
 int messageInt = 1;
@@ -26,8 +33,9 @@ double messageDoubleArr[] = {1.5, 2.5, 3.5};
 int lastSecond = second();
 
 void setup(){
-  lemma = new Lemma(this, "lemmaID", "pa-m-dbrody.local - Noam Moderator");
-  // Listen for an Event
+  lemma = new Lemma(this, lemmaName, roomName);
+
+  // Set up listeners for the different Topics
   lemma.hear("messageInt", new IntHandler());
   lemma.hear("messageBool", new BoolHandler());
   lemma.hear("messageDouble", new DoubleHandler());
@@ -42,9 +50,10 @@ void setup(){
 }
 void draw(){
   int currSecond = second();
+  
+  // Send a group of events every second
   if(lastSecond != currSecond){
     lastSecond = currSecond;
-    // Try to send an event
     if ( lemma.sendEvent("messageInt", messageInt) ){
       messageInt++;
     }
@@ -82,7 +91,8 @@ void draw(){
 }
 
 //----------------------------------------------------------------------------------------------------------------//
-// 3. Extend Lemma to implement EventHandler interface (Processing's Main sketch can't implement interfaces...)
+// 3. Extend the EventHandler interface defining a callback(Event evnet) method
+//    to handle callbacks. Example for each data type below.
 //----------------------------------------------------------------------------------------------------------------//
 
 class BoolHandler implements EventHandler {
