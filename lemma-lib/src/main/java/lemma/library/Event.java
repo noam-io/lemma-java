@@ -8,6 +8,7 @@ public class Event {
     public int intValue;
     public double doubleValue;
     public float floatValue;
+    public Object objectValue;
 
     public int arraySize;
     public boolean isArray;
@@ -25,6 +26,7 @@ public class Event {
         this.intValue = 0;
         this.doubleValue = (double) 0;
         this.floatValue = (float) 0;
+        this.objectValue = null;
 
         this.isArray = false;
         this.arraySize = 0;
@@ -39,6 +41,7 @@ public class Event {
         this.isArray = (value instanceof Object[]);
         this.name = name;
 
+        this.objectValue = value;
         this.stringValue = value.toString();
 
         try {
