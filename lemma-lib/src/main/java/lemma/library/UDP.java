@@ -22,8 +22,7 @@ import java.net.*;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 /**
  * Create and manage unicast, broadcast or multicast socket to send and receive
@@ -67,13 +66,12 @@ import java.text.SimpleDateFormat;
  * @author Douglas Edric Stanley - http://www.abstractmachine.net/
  */
 public class UDP implements Runnable {
-
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     // the current unicast/multicast datagram socket
     DatagramSocket ucSocket		= null;
     MulticastSocket mcSocket	= null;
 
-    boolean log			= false;	// enable/disable output log
     boolean listen		= false;	// true, if the socket waits for packets
     int timeout			= 0;		// reception timeout > 0=infinite timeout
     int size			= 65507;	// the socket buffer size in bytes
@@ -691,8 +689,8 @@ public class UDP implements Runnable {
      */
     private void callTimeoutHandler() {
         try {
-            Method m = owner.getClass().getDeclaredMethod(timeoutHandler, null);
-            m.invoke( owner, null );
+            Method m = owner.getClass().getDeclaredMethod(timeoutHandler);
+            m.invoke( owner );
         }
         catch( NoSuchMethodException e )		{;}
         catch( IllegalAccessException e )		{ error(e.getMessage()); }
@@ -837,40 +835,18 @@ public class UDP implements Runnable {
     }
 
     /**
-     * Enable or disable output process log.
-     */
-    public void log( boolean on ) {
-        log = on;
-    }
-
-    /**
      * Output message to the standard output stream.
-     * @param out	the output message
+     * @param message the output message
      */
-    private void log( String out ) {
-
-        Date date = new Date();
-
-        // define the "header" to retrieve at least the principal socket
-        // informations : the host/port where the socket is bound.
-        if ( !log && header.equals("") )
-            header = "-- UDP session started at "+date+" --\n-- "+out+" --\n";
-
-        // print out
-        if ( log ) {
-
-            String pattern	= "yy-MM-dd HH:mm:ss.S Z";
-            String sdf		= new SimpleDateFormat(pattern).format( date );
-            System.out.println( header+"["+sdf+"] "+out );
-            header = ""; // forget header
-        }
+    private void log( String message ) {
+        logger.fine(message);
     }
 
     /**
      * Output error messages to the standard error stream.
-     * @param err the error string
+     * @param message the error string
      */
-    private void error( String err ) {
-        System.err.println( err );
+    private void error( String message ) {
+        logger.warning(message);
     }
 }

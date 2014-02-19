@@ -2,7 +2,6 @@ package lemma.library;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.logging.Level;
@@ -12,17 +11,6 @@ import static org.junit.Assert.assertEquals;
 public class ModeratorLocatorTest {
     private ModeratorLocator locator;
     private Level initialLevel;
-
-    @Before
-    public void setUpLogging() {
-        initialLevel = NoamLogger.instance().getLevel();
-        NoamLogger.instance().setLevel(Level.OFF);
-    }
-
-    @After
-    public void tearDownLogging() {
-        NoamLogger.instance().setLevel(initialLevel);
-    }
 
     @Before
     public void setUp() {

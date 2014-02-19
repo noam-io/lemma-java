@@ -2,8 +2,10 @@ package lemma.library;
 
 import org.json.JSONArray;
 
+import java.util.logging.Logger;
+
 public class MessageParser {
-    private static NoamLogger logger = NoamLogger.instance();
+    private static Logger logger = Logger.getLogger(MessageParser.class.getName());
 
     static Event parseEvent(String message) {
         try {
@@ -25,7 +27,7 @@ public class MessageParser {
             
             return result;
         } catch (org.json.JSONException e) {
-            logger.warn(MessageParser.class, "Failed to parse event message : " + e);
+            logger.warning("Failed to parse event message : " + e);
             return null;
         }
     }
@@ -37,7 +39,7 @@ public class MessageParser {
             int portNumber = messageArray.getInt(2);
             return new PoloMessage(portNumber, roomName);
         } catch (org.json.JSONException e) {
-            logger.warn(MessageParser.class, "Failed to parse polo message : " + e);
+            logger.warning("Failed to parse polo message : " + e);
             return null;
         }
     }
