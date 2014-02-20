@@ -26,12 +26,12 @@ public class EventFilter {
         }
     }
     public void add(String eventName, EventHandler callback){
-        if(filterNumber >= MAX_FILTERS){
+        if(this.nFilters >= MAX_FILTERS){
             System.out.println("Lemma can only hear up to "+MAX_FILTERS+" topics. Unable to add '" + eventName +"'.");
         } else {
             int filterNumber = nFilters++;
             filters[filterNumber].eventName = eventName;
-            filters[filterNumber].callback = callback;        // Assign callback identity here
+            filters[filterNumber].callback = callback;
 
             this.eventNames[filterNumber] = filters[filterNumber].eventName;
         }
@@ -39,7 +39,7 @@ public class EventFilter {
     public void handle(Event event){
         for(int i = 0; i < nFilters; i++) {
             if (filters[i].eventName.equals(event.name)) {
-                filters[i].callback.callback(event);                 // Now runs placeholder method, should run custom callback
+                filters[i].callback.callback(event);
             }
         }
     }
