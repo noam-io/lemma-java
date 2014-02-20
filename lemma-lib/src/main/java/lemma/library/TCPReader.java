@@ -31,7 +31,7 @@ public class TCPReader {
 		while( bytesRead < length ) {
 			int lastBytesRead = bytesRead;
 			int thisBytesRead = client.readBytes(copyBuffer);
-
+			thisBytesRead = Math.min(thisBytesRead, length - lastBytesRead);
 			bytesRead +=  thisBytesRead;
 
 			for (int i = 0; i < thisBytesRead; i++){
