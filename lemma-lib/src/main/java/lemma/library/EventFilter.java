@@ -37,6 +37,7 @@ public class EventFilter {
         }
     }
     public void handle(Event event){
+        if(event == null) { return; }
         for(int i = 0; i < nFilters; i++) {
             if (filters[i].eventName.equals(event.name)) {
                 filters[i].callback.callback(event);
