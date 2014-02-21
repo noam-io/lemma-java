@@ -31,7 +31,7 @@ public class Lemma {
     }
 
     public static void main(String[] args) {
-        Lemma lemma = new Lemma(new Object(), "test", "Noam");
+        Lemma lemma = new Lemma(new Object(), "test", "");
         int messagesSent = 0;
         while(true) {
             if (lemma.sendEvent("messagesSent", messagesSent)) {
@@ -39,7 +39,7 @@ public class Lemma {
             }
             lemma.run();
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -54,7 +54,6 @@ public class Lemma {
     private void tryConnectingToModerator() {
         if (!messageSender.isConnected()) {
             messageSender.stop();
-
             moderatorLocator.tryLocate();
             if (moderatorLocator.foundModerator()) {
                 String moderatorIp = moderatorLocator.moderatorIp();
@@ -72,6 +71,7 @@ public class Lemma {
                 }
 
                 messageSender.sendRegistration(tcpListenPort, filter.events(), filter.count(), new String[0], 0);
+                moderatorLocator.reset();
             }
         }
     }
