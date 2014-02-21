@@ -5,6 +5,7 @@
 import lemma.library.Event;
 import lemma.library.EventHandler;
 import lemma.library.Lemma;
+import java.util.logging.Level;
 
 //------------------------------------------------------------------------------------------------//
 // 2. Instance one or more Lemmas. Construct, setup listeners, run in loop.
@@ -15,6 +16,7 @@ int messagesSent = 1;
 
 void setup(){
   lemma = new Lemma(this, "lemmaID", "Desired Room");
+  //lemma = new Lemma(this, "lemmaID", "Desired Room", Level.FINE);
   // Listen for an Event
   lemma.hear("messagesSent", new MyEventHandler());
 }

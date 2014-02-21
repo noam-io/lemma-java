@@ -2,19 +2,20 @@ package lemma.library;
 
 import org.json.JSONObject;
 
-public class MessageSender {
-    private static NoamLogger logger = NoamLogger.instance();
+import java.util.logging.Logger;
 
-	public MessageBuilder messageBuilder;
+public class MessageSender {
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public MessageBuilder messageBuilder;
 	public TCPClient outboundClient;
 
-	public MessageSender( String lemmaID, TCPClient outboundClient ){
-		this.messageBuilder = new MessageBuilder( lemmaID );
+    public MessageSender( String lemmaID ){
+        this(lemmaID, null);
+    }
+    public MessageSender( String lemmaID, TCPClient outboundClient ){
+        this.messageBuilder = new MessageBuilder( lemmaID );
 		this.outboundClient = outboundClient;
-	}
-	public MessageSender( String lemmaID ){
-		this.messageBuilder = new MessageBuilder( lemmaID );
-		this.outboundClient = null;
 	}
 	public boolean isConnected(){
 		if (outboundClient == null) return false;
@@ -46,7 +47,7 @@ public class MessageSender {
 		if (this.isConnected()){
 			String encoded = TCPProtocol.encode( message );
 			outboundClient.write(encoded); 		// Missing check here? Was it written?
-			logger.debug(this.getClass(), "Sent event : " + encoded);
+			logger.fine("Sent event : " + encoded);
 			return true;
 		}
 		else {

@@ -8,9 +8,10 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ModeratorLocator {
-    private static NoamLogger logger = NoamLogger.instance();
+    private Logger logger = Logger.getLogger(this.getClass().getName());
     private static final int MARCO_PORT = 1030;
     private static final int MARCO_DELAY_MILLIS = 1000;
     private final String marcoMessage;
@@ -26,7 +27,6 @@ public class ModeratorLocator {
         marcoMessage = builder.buildMarco(desiredServerName);
 
         udp = new UDP(this);
-        udp.log(true);
         udp.broadcast(true);
         udp.listen(true);
     }
@@ -73,11 +73,9 @@ public class ModeratorLocator {
         Packet incomingPacket = this.incomingPacket;
 
         if (incomingPacket != null && incomingPacket.message != null) {
-
-            logger.info(this.getClass(), "incomingPacket: " + incomingPacket.message);
-
             PoloMessage polo = MessageParser.parsePolo(incomingPacket.message);
             if (polo != null) {
+                logger.fine("received polo message: " + incomingPacket.message);
                 this.locatedIp = incomingPacket.ip;
                 this.locatedPort = polo.portNumber;
                 this.locatedServerName = polo.roomName;
@@ -86,7 +84,7 @@ public class ModeratorLocator {
     }
 
     public void receive(byte[] data, String ip, int port) {
-        logger.info(this.getClass(), "got UDP response on polo port: " + new String(data));
+        logger.fine("got UDP response on polo port: " + new String(data));
         Packet incomingPacket = new Packet();
         incomingPacket.message = new String(data);
         incomingPacket.ip = ip;

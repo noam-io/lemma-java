@@ -2,26 +2,35 @@ package lemma.library;
 
 import org.json.JSONObject;
 
-import java.util.logging.Level;
+import java.util.logging.*;
 
 public class Lemma {
     public final static String VERSION = "##library.prettyVersion##";
-    public final int tcpListenPort;
-    NoamLogger logger = NoamLogger.instance();
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
     Object parent;
+    public int tcpListenPort;
     private TCPClient moderatorClient;
     private TCPServer eventServer;
     private ModeratorLocator moderatorLocator;
     private MessageSender messageSender;
     private EventFilter filter;
 
+    static {
+        NoamLogSettings.setDefaultLevel();
+    }
+
     public Lemma(Object parent, String lemmaID, String desiredServerName) {
-        this(parent, lemmaID, desiredServerName, Level.ALL);
+        initialize(parent, lemmaID, desiredServerName);
     }
 
     public Lemma(Object parent, String lemmaID, String desiredServerName, Level level) {
+        NoamLogSettings.setLevel(level);
+        initialize(parent, lemmaID, desiredServerName);
+    }
+
+    public void initialize (Object parent, String lemmaID, String desiredServerName) {
         this.parent = parent;
-        logger.setLevel(level);
         eventServer = new TCPServer(parent, 0);
         this.tcpListenPort = eventServer.server.getLocalPort();
 
@@ -32,6 +41,7 @@ public class Lemma {
 
     public static void main(String[] args) {
         Lemma lemma = new Lemma(new Object(), "test", "");
+//        Lemma lemma = new Lemma(new Object(), "Java", "Desired Room", Level.INFO);
         int messagesSent = 0;
         while(true) {
             if (lemma.sendEvent("messagesSent", messagesSent)) {
@@ -59,15 +69,15 @@ public class Lemma {
                 String moderatorIp = moderatorLocator.moderatorIp();
                 int moderatorPort = moderatorLocator.moderatorPort();
 
-                logger.info(this.getClass(), "Attempting connection to Moderator @ " + moderatorIp + " : " + moderatorPort);
+                logger.fine("Attempting connection to Moderator @ " + moderatorIp + ":" + moderatorPort);
                 moderatorClient = new TCPClient(parent, moderatorIp, moderatorPort);
 
                 if (moderatorClient.active()) {
-                    logger.info(this.getClass(), "Moderator Connection established");
+                    logger.info("Noam is connected!");
                     messageSender.setClient(moderatorClient);
                 } else {
                     moderatorLocator.reset();
-                    logger.warn(this.getClass(), "Moderator Connection failed / dropped");
+                    logger.warning("Noam connection failed / dropped");
                 }
 
                 messageSender.sendRegistration(tcpListenPort, filter.events(), filter.count(), new String[0], 0);
@@ -94,9 +104,36 @@ public class Lemma {
         filter.add(name, callback);
     }
 
-    public boolean sendEvent(String name, Object value) {
+    public boolean sendEvent(String name, String value) {
         if (!messageSender.sendEvent(name, value)) {
-            logger.debug(this.getClass(), "Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            logger.fine("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendEvent(String name, int value) {
+        if (!messageSender.sendEvent(name, value)) {
+            logger.fine("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendEvent(String name, double value) {
+        if (!messageSender.sendEvent(name, value)) {
+            logger.fine("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
+            messageSender.stop();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendEvent(String name, JSONObject value) {
+        if (!messageSender.sendEvent(name, value)) {
+            logger.fine("Unable to send [" + name + " : " + value + "] ... Aborting Connection");
             messageSender.stop();
             return false;
         }

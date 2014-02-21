@@ -1,10 +1,11 @@
 package lemma.library;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+
+import java.util.logging.Logger;
 
 public class MessageBuilder {
-    private static NoamLogger logger = NoamLogger.instance();
+    private static Logger logger = Logger.getLogger(MessageBuilder.class.getName());
 
     private final String lemmaID;
 
@@ -30,7 +31,7 @@ public class MessageBuilder {
                 root.put(value);
             }
         } catch (Exception e) {
-            logger.warn(MessageBuilder.class, "Couldn't add " + value.getClass() + " — " + value + " - to array : " + e);
+            logger.warning("Couldn't add " + value.getClass() + " — " + value + " - to array : " + e);
         }
     }
 
