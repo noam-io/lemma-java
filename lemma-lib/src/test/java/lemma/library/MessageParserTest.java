@@ -13,6 +13,12 @@ public class MessageParserTest {
     }
 
     @Test
+    public void parseBadPoloMessage() {
+        PoloMessage polo = MessageParser.parsePolo("[\"server_response\",\"Server\", 1234]");
+        assertEquals(null, polo);
+    }
+
+    @Test
     public void parseEventString() {
     	String msg = "[\"event\",\"lemma_id\",\"eventName\",\"Hello World\"]";
         Event event = MessageParser.parseEvent(msg);
