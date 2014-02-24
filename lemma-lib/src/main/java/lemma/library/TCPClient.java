@@ -43,7 +43,7 @@ import java.net.*;
  * @usage Application
  * @see_external LIB_net/clientEvent
  */
-public class TCPClient implements Runnable {
+public class TCPClient implements Runnable, ITCPClient {
   Object parent;
   Method clientEventMethod;
   Method disconnectEventMethod;

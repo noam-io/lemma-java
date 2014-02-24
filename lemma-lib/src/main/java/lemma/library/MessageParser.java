@@ -35,12 +35,15 @@ public class MessageParser {
     public static PoloMessage parsePolo(String message) {
         try {
             JSONArray messageArray = new JSONArray(message);
-            String roomName = messageArray.getString(1);
-            int portNumber = messageArray.getInt(2);
-            return new PoloMessage(portNumber, roomName);
+            String messageType = messageArray.getString(0);
+            if(messageType.equals("polo")){
+                String roomName = messageArray.getString(1);
+                int portNumber = messageArray.getInt(2);
+                return new PoloMessage(portNumber, roomName);
+            }
         } catch (org.json.JSONException e) {
             logger.warning("Failed to parse polo message : " + e);
-            return null;
         }
+        return null;
     }
 }
