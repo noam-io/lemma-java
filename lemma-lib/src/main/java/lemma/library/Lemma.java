@@ -3,6 +3,7 @@ package lemma.library;
 import org.json.JSONObject;
 
 import java.util.logging.*;
+import java.util.regex.Pattern;
 
 public class Lemma {
     public final static String VERSION = "##library.prettyVersion##";
@@ -30,13 +31,17 @@ public class Lemma {
     }
 
     public void initialize (Object parent, String lemmaID, String desiredServerName) {
-        this.parent = parent;
-        eventServer = new TCPServer(parent, 0);
-        this.tcpListenPort = eventServer.server.getLocalPort();
+        if(this.isValidLemmaId(lemmaID)){
+            this.parent = parent;
+            eventServer = new TCPServer(parent, 0);
+            this.tcpListenPort = eventServer.server.getLocalPort();
 
-        moderatorLocator = new ModeratorLocator(lemmaID, desiredServerName);
-        messageSender = new MessageSender(lemmaID);
-        filter = new EventFilter();
+            moderatorLocator = new ModeratorLocator(lemmaID, desiredServerName);
+            messageSender = new MessageSender(lemmaID);
+            filter = new EventFilter();
+        } else {
+            throw new IllegalArgumentException("Lemma names may only contain alphanumeric characters or underscores (_). They also may not begin with a number.");
+        }
     }
 
     public static void main(String[] args) {
@@ -148,5 +153,9 @@ public class Lemma {
 
     public boolean connected() {
         return messageSender.isConnected();
+    }
+
+    private boolean isValidLemmaId(String lemmaId){
+        return Pattern.matches("^[a-zA-Z_][a-zA-Z0-9_]*$", lemmaId);
     }
 }
