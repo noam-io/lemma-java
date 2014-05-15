@@ -1,3 +1,5 @@
+//Copyright (c) 2014, IDEO 
+
 package lemma.library;
 
 import org.junit.Test;

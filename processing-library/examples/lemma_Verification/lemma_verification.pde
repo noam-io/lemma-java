@@ -1,3 +1,5 @@
+// Copyright (c) 2014, IDEO
+
 import lemma.library.Event;
 import lemma.library.EventHandler;
 import lemma.library.Lemma;

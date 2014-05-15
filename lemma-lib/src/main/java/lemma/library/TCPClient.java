@@ -1,3 +1,5 @@
+//Copyright (c) 2014, IDEO 
+
 /* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
 /*

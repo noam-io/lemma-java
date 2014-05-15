@@ -1,3 +1,5 @@
+//Copyright (c) 2014, IDEO 
+
 /**
  * (./) UDP.java v0.2 06/01/26
  * (by) Douglas Edric Stanley & Cousot Stéphane
