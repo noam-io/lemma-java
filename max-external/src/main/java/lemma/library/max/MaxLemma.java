@@ -16,8 +16,6 @@ public class MaxLemma extends MaxObject implements EventHandler{
 
     public MaxLemma() {
         declareAttribute("HEARS");
-        declareAttribute("BROADCAST_PORT");
-        declareAttribute("LISTEN_PORT");
         declareAttribute("LEMMA_NAME");
     }
 
