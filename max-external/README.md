@@ -34,7 +34,7 @@ Edit the file and find the line:
 Uncomment the line and set it to the lib directory where you unzipped this file.
 For Example:
 
-       max.dynamic.jar.dir [max lemma installation]/lib     ;
+       max.dynamic.jar.dir [max lemma installation]/lib
 
 Note: you need to restart Max after making changes to this file.
 
@@ -49,21 +49,17 @@ Enter "mxj lemma.library.max.MaxLemma"
 
 **Defaults:** 
 
-* noam udp broadcast port: **1030**
-* tcp port lemme will listen for events on: **7788**
 * lemma name used during registration and message sending: **max-lemma**
 * list of events lemma listens for: **\<empty list>**
 
 Defaults can be overridden by passing to the max objects as attributes.
 
-* @BROADCAST_PORT <integer>
-* @LISTEN_PORT <integer>
 * @LEMMA_NAME <String/Symbol>
 * @HEARS [<list of Strings / Symbols>]
 
 **Example:**
 
-      mxj lemma.library.max.MaxLemma @LISTEN_PORT 7799 @LEMMA_NAME my-max-app @HEARS messageOne messageTwo
+      mxj lemma.library.max.MaxLemma @LEMMA_NAME myMaxApp @HEARS messageOne messageTwo
 
 Send a "begin" message to inlet(0) to connect to noam and start listening.
 

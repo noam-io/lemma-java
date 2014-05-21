@@ -107,7 +107,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 47.0, 295.0, 585.0, 33.0 ],
-					"text" : "mxj lemma.library.max.MaxLemma @BROADCAST_PORT 1030 @LISTEN_PORT 7799 @LEMMA_NAME my-max-app @HEARS messageOne messageTwo"
+					"text" : "mxj lemma.library.max.MaxLemma @LEMMA_NAME myMaxApp @HEARS messageOne messageTwo"
 				}
 
 			}

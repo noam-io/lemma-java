@@ -12,7 +12,7 @@ public class LemmaExample {
     public static void main(String[] args) throws Exception {
         LemmaExample example = new LemmaExample();
         //Create and configure lemma
-        Lemma lemma= new Lemma(example, "my-lemma", 1030, 6083);
+        Lemma lemma= new Lemma(example, "mylemma", "");
         //listen for event snd define callback
         lemma.hear("myEvent",new EventHandler() {
             @Override
