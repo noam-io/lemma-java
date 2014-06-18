@@ -107,7 +107,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 47.0, 295.0, 585.0, 33.0 ],
-					"text" : "mxj lemma.library.max.MaxLemma @LEMMA_NAME myMaxApp @HEARS messageOne messageTwo"
+					"text" : "mxj lemma.library.max.MaxLemma @ROOM_NAME desiredRoom @LEMMA_NAME myMaxApp @HEARS messageOne messageTwo"
 				}
 
 			}

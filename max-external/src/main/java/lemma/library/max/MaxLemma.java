@@ -11,12 +11,14 @@ public class MaxLemma extends MaxObject implements EventHandler{
 
     private Lemma lemma = null;
     private volatile Thread thread = null;
-    private String LEMMA_NAME = "max-lemma";
+    private String LEMMA_NAME = "maxLemma";
+    private String ROOM_NAME = "";
     private String[] HEARS = null;
 
     public MaxLemma() {
         declareAttribute("HEARS");
         declareAttribute("LEMMA_NAME");
+        declareAttribute("ROOM_NAME");
     }
 
     private boolean active(){
@@ -27,7 +29,7 @@ public class MaxLemma extends MaxObject implements EventHandler{
         if (active()) {
            dispose();
         }
-        lemma = new Lemma(this, LEMMA_NAME, "");
+        lemma = new Lemma(this, LEMMA_NAME, ROOM_NAME);
 
         if (HEARS != null) {
             for (String messageName : HEARS) {
@@ -37,7 +39,6 @@ public class MaxLemma extends MaxObject implements EventHandler{
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("Starting MaxLemma...");
                 while (Thread.currentThread() == thread) {
                     lemma.run();
                     try {
