@@ -19,6 +19,7 @@ public class MaxLemma extends MaxObject implements EventHandler{
         declareAttribute("HEARS");
         declareAttribute("LEMMA_NAME");
         declareAttribute("ROOM_NAME");
+        createInfoOutlet(false);
     }
 
     private boolean active(){
