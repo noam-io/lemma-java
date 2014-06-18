@@ -40,6 +40,11 @@ public class MaxLemma extends MaxObject implements EventHandler{
                 System.out.println("Starting MaxLemma...");
                 while (Thread.currentThread() == thread) {
                     lemma.run();
+                    try {
+                        thread.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
