@@ -39,13 +39,13 @@ public class MaxLemma extends MaxObject implements EventHandler{
         }
         thread = new Thread(new Runnable() {
             @Override
-            public void run() {
-                while (Thread.currentThread() == thread) {
+            public synchronized void run() {
+                while (!Thread.currentThread().isInterrupted()) {
                     lemma.run();
                     try {
                         thread.sleep(2);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        break;
                     }
                 }
             }
@@ -54,7 +54,9 @@ public class MaxLemma extends MaxObject implements EventHandler{
     }
 
     public void sendEvent(String name, String value){
-        lemma.sendEvent(name, value);
+        if (lemma != null && lemma.connected()) {
+            lemma.sendEvent(name, value);
+        }
     }
 
     @Override
@@ -67,6 +69,9 @@ public class MaxLemma extends MaxObject implements EventHandler{
     }
 
     private void dispose(){
+        if(thread != null) {
+            thread.interrupt();
+        }
         thread = null;
         if (lemma != null) {
             lemma.stop();

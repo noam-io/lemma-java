@@ -8,7 +8,7 @@
 			"architecture" : "x86"
 		}
 ,
-		"rect" : [ 177.0, 473.0, 640.0, 480.0 ],
+		"rect" : [ 127.0, 181.0, 640.0, 480.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -104,9 +104,9 @@
 					"linecount" : 2,
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 47.0, 295.0, 585.0, 33.0 ],
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 47.0, 295.0, 588.0, 33.0 ],
 					"text" : "mxj lemma.library.max.MaxLemma @ROOM_NAME desiredRoom @LEMMA_NAME myMaxApp @HEARS messageOne messageTwo"
 				}
 

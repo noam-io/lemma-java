@@ -49,21 +49,20 @@ import java.net.*;
  * @brief The server class is used to create server objects which send and receives data to and from its associated clients (other programs connected to it). 
  * @instanceName server  	any variable of type TCPServer
  */
-public class TCPServer implements Runnable {
-  Object parent;
-  Method serverEventMethod;
+public class TCPServer extends Thread {
+  private Object parent;
+  private Method serverEventMethod;
 
-  volatile Thread thread;
-  ServerSocket server;
-  int port;
-  
+  private ServerSocket server;
+  private int port;
+
   /** Number of clients currently connected. */
-  public int clientCount;
+  private int clientCount;
   /** Array of client objects, useful length is determined by clientCount. */
-  public TCPClient[] clients;
+  private TCPClient[] clients;
 
-  
-  /**
+
+    /**
    * @param parent typically use "this"
    * @param port port used to transfer data
    */
@@ -72,11 +71,8 @@ public class TCPServer implements Runnable {
     this.port = port;
 
     try {
-      server = new ServerSocket(this.port);
+      server = new ServerSocket(port);
       clients = new TCPClient[10];
-
-      thread = new Thread(this);
-      thread.start();
 
       // reflection to check whether host applet has a call for
       // public void serverEvent(TCPServer s, TCPClient c);
@@ -89,13 +85,14 @@ public class TCPServer implements Runnable {
       } catch (Exception e) {
         // no such method, or an error.. which is fine, just ignore
       }
-
     } catch (IOException e) {
       e.printStackTrace();
-      thread = null;
     }
   }
 
+  public int getLocalPort(){
+     return server.getLocalPort();
+  }
 
   /**
    *
@@ -105,8 +102,8 @@ public class TCPServer implements Runnable {
    * @webref server:server
    * @param client the client to disconnect
    */
-  public void disconnect(TCPClient client) {
-    client.dispose();
+  private void disconnect(TCPClient client) {
+    client.stop();
     int index = clientIndex(client);
     if (index != -1) {
       removeIndex(index);
@@ -114,7 +111,7 @@ public class TCPServer implements Runnable {
   }
   
   
-  protected void removeIndex(int index) {
+  private void removeIndex(int index) {
     clientCount--;
     // shift down the remaining clients
     for (int i = index; i < clientCount; i++) {
@@ -125,7 +122,7 @@ public class TCPServer implements Runnable {
   }
   
   
-  protected void addClient(TCPClient client) {
+  private void addClient(TCPClient client) {
     if (clientCount == clients.length) {
         int newSize = clients.length + 10;
         Object temp = Array.newInstance(TCPClient.class, newSize);
@@ -137,7 +134,7 @@ public class TCPServer implements Runnable {
   }
   
   
-  protected int clientIndex(TCPClient client) {
+  private int clientIndex(TCPClient client) {
     for (int i = 0; i < clientCount; i++) {
       if (clients[i] == client) {
         return i;
@@ -187,31 +184,10 @@ public class TCPServer implements Runnable {
     return null;
   }
 
+  @Override
+  public void interrupt(){
 
-  /**
-   *
-   * Disconnects all clients and stops the server.
-   * 
-   * <h3>Advanced</h3>
-   * Use this to shut down the server if you finish using it while your app
-   * is still running.
-   * @brief Disconnects all clients and stops the server.
-   * @webref server
-   * @usage application
-   */
-  public void stop() {
-    dispose();
-  }
-
-
-  /**
-   * Disconnect all clients and stop the server: internal use only.
-   */
-  public void dispose() {
-
-      thread = null;
-
-      if (clients != null) {
+    if (clients != null) {
       for (int i = 0; i < clientCount; i++) {
         disconnect(clients[i]);
       }
@@ -226,14 +202,17 @@ public class TCPServer implements Runnable {
       }
     } catch (IOException e) {
       e.printStackTrace();
+    } finally {
+        super.interrupt();
     }
   }
 
 
-  public void run() {
-    while (!Thread.currentThread().isInterrupted() && Thread.currentThread() == thread) {
-      try {
+  @Override
+  public synchronized void run() {
 
+    while (true) {
+      try {
         Socket socket = server.accept();
         TCPClient client = new TCPClient(parent, socket);
         synchronized (clients) {
@@ -248,62 +227,12 @@ public class TCPServer implements Runnable {
             }
           }
         }
-      } catch (IOException e) {
-        e.printStackTrace();
-        thread = null;
+      } catch (Exception ex) {
+        break;
       }
-      try {
-        Thread.sleep(8);
-      } catch (InterruptedException ex) { }
     }
   }
 
 
-  /**
-   *
-   * Writes a value to all the connected clients. It sends bytes out from the 
-   * TCPServer object.
-   * 
-   * @webref server
-   * @brief Writes data to all connected clients
-   * @param data data to write
-   */
-  public void write(int data) {  // will also cover char
-    int index = 0;
-    while (index < clientCount) {
-      clients[index].write(data);
-      if (clients[index].active()) {
-        index++;
-      } else {
-        removeIndex(index);
-      }
-    }
-  }
-  
-
-  public void write(byte data[]) {
-    int index = 0;
-    while (index < clientCount) {
-      clients[index].write(data);
-      if (clients[index].active()) {
-        index++;
-      } else {
-        removeIndex(index);
-      }
-    }
-  }
-  
-
-  public void write(String data) {
-    int index = 0;
-    while (index < clientCount) {
-      clients[index].write(data);
-      if (clients[index].active()) {
-        index++;
-      } else {
-        removeIndex(index);
-      }
-    }
-  }
 
 }

@@ -29,12 +29,13 @@ public class LemmaExample {
 
         //publish events and listen in loop
         int count = 1;
-        while(true){
+        while(count < 500){
             lemma.run();
             lemma.sendEvent("myEvent", "Event #" + count);
             count++;
-            Thread.sleep(200);
+            Thread.sleep(2);
         }
+        lemma.stop();
     }
 
 }
