@@ -18,7 +18,6 @@ public class Lemma {
     private ModeratorLocator moderatorLocator;
     private MessageSender messageSender;
     private EventFilter filter;
-    private boolean run = false;
 
     static {
         NoamLogSettings.setDefaultLevel();
@@ -43,7 +42,6 @@ public class Lemma {
             moderatorLocator = new ModeratorLocator(lemmaID, desiredServerName);
             messageSender = new MessageSender(lemmaID);
             filter = new EventFilter();
-            run = true;
         } else {
             throw new IllegalArgumentException("Lemma names may only contain alphanumeric characters or underscores (_). They also may not begin with a number.");
         }
@@ -67,10 +65,8 @@ public class Lemma {
     }
 
     public void run() {
-        if (run) {
-            tryConnectingToModerator();
-            handleIncomingConnections();
-        }
+       tryConnectingToModerator();
+       handleIncomingConnections();
     }
 
     private void tryConnectingToModerator() {
@@ -153,7 +149,6 @@ public class Lemma {
     }
 
     public void stop() {
-        run = false;
         moderatorLocator.close();
         eventServer.interrupt();
         moderatorClient.stop();
