@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/noam-io/lemma-java.svg?branch=master)](https://travis-ci.org/noam-io/lemma-java)
 ## Java Lemma Repository
 ------------------------
 
