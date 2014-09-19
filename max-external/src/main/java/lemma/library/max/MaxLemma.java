@@ -11,12 +11,15 @@ public class MaxLemma extends MaxObject implements EventHandler{
 
     private Lemma lemma = null;
     private volatile Thread thread = null;
-    private String LEMMA_NAME = "max-lemma";
+    private String LEMMA_NAME = "maxLemma";
+    private String ROOM_NAME = "";
     private String[] HEARS = null;
 
     public MaxLemma() {
         declareAttribute("HEARS");
         declareAttribute("LEMMA_NAME");
+        declareAttribute("ROOM_NAME");
+        createInfoOutlet(false);
     }
 
     private boolean active(){
@@ -27,7 +30,7 @@ public class MaxLemma extends MaxObject implements EventHandler{
         if (active()) {
            dispose();
         }
-        lemma = new Lemma(this, LEMMA_NAME, "");
+        lemma = new Lemma(this, LEMMA_NAME, ROOM_NAME);
 
         if (HEARS != null) {
             for (String messageName : HEARS) {
@@ -36,10 +39,14 @@ public class MaxLemma extends MaxObject implements EventHandler{
         }
         thread = new Thread(new Runnable() {
             @Override
-            public void run() {
-                System.out.println("Starting MaxLemma...");
-                while (Thread.currentThread() == thread) {
+            public synchronized void run() {
+                while (!Thread.currentThread().isInterrupted()) {
                     lemma.run();
+                    try {
+                        thread.sleep(2);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 }
             }
         });
@@ -47,7 +54,9 @@ public class MaxLemma extends MaxObject implements EventHandler{
     }
 
     public void sendEvent(String name, String value){
-        lemma.sendEvent(name, value);
+        if (lemma != null && lemma.connected()) {
+            lemma.sendEvent(name, value);
+        }
     }
 
     @Override
@@ -60,6 +69,9 @@ public class MaxLemma extends MaxObject implements EventHandler{
     }
 
     private void dispose(){
+        if(thread != null) {
+            thread.interrupt();
+        }
         thread = null;
         if (lemma != null) {
             lemma.stop();

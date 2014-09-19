@@ -196,7 +196,6 @@ public class TCPClient implements Runnable, ITCPClient {
           try {
             value = input.read();
           } catch (SocketException e) {
-             System.err.println("TCPClient SocketException: " + e.getMessage());
              // the socket had a problem reading so don't try to read from it again.
              stop();
              return;
@@ -246,7 +245,6 @@ public class TCPClient implements Runnable, ITCPClient {
     return (thread != null);
   }
 
-
   /**
    *
    * Returns the IP address of the computer to which the TCPClient is attached.
@@ -287,81 +285,6 @@ public class TCPClient implements Runnable, ITCPClient {
     bufferIndex = 0;
   }
 
-
-  /**
-   *
-   * Returns a number between 0 and 255 for the next byte that's waiting in 
-   * the buffer. Returns -1 if there is no byte, although this should be 
-   * avoided by first cheacking <b>available()</b> to see if any data is available.
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief Returns a value from the buffer
-   */
-  public int read() {
-    if (bufferIndex == bufferLast) return -1;
-
-    synchronized (buffer) {
-      int outgoing = buffer[bufferIndex++] & 0xff;
-      if (bufferIndex == bufferLast) {  // rewind
-        bufferIndex = 0;
-        bufferLast = 0;
-      }
-      return outgoing;
-    }
-  }
-
-
-  /**
-   *
-   * Returns the next byte in the buffer as a char. Returns -1 or 0xffff if 
-   * nothing is there.
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief Returns the next byte in the buffer as a char
-   */
-  public char readChar() {
-    if (bufferIndex == bufferLast) return (char)(-1);
-    return (char) read();
-  }
-
-
-  /**
-   *
-   * Reads a group of bytes from the buffer. The version with no parameters 
-   * returns a byte array of all data in the buffer. This is not efficient, 
-   * but is easy to use. The version with the <b>byteBuffer</b> parameter is 
-   * more memory and time efficient. It grabs the data in the buffer and puts 
-   * it into the byte array passed in and returns an int value for the number 
-   * of bytes read. If more bytes are available than can fit into the 
-   * <b>byteBuffer</b>, only those that fit are read.
-   * 
-   * <h3>Advanced</h3>
-   * Return a byte array of anything that's in the serial buffer.
-   * Not particularly memory/speed efficient, because it creates
-   * a byte array on each read, but it's easier to use than
-   * readBytes(byte b[]) (see below).
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief Reads everything in the buffer
-   */
-  public byte[] readBytes() {
-    if (bufferIndex == bufferLast) return null;
-
-    synchronized (buffer) {
-      int length = bufferLast - bufferIndex;
-      byte outgoing[] = new byte[length];
-      System.arraycopy(buffer, bufferIndex, outgoing, 0, length);
-
-      bufferIndex = 0;  // rewind
-      bufferLast = 0;
-      return outgoing;
-    }
-  }
-
-
   /**
    * <h3>Advanced</h3>
    * Grab whatever is in the serial buffer, and stuff it into a
@@ -390,162 +313,6 @@ public class TCPClient implements Runnable, ITCPClient {
       return length;
     }
   }
-
-
-  /**
-   *
-   * Reads from the port into a buffer of bytes up to and including a 
-   * particular character. If the character isn't in the buffer, 'null' is 
-   * returned. The version with no <b>byteBuffer</b> parameter returns a byte 
-   * array of all data up to and including the <b>interesting</b> byte. This 
-   * is not efficient, but is easy to use. The version with the 
-   * <b>byteBuffer</b> parameter is more memory and time efficient. It grabs 
-   * the data in the buffer and puts it into the byte array passed in and 
-   * returns an int value for the number of bytes read. If the byte buffer is 
-   * not large enough, -1 is returned and an error is printed to the message 
-   * area. If nothing is in the buffer, 0 is returned.
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief Reads from the buffer of bytes up to and including a particular character
-   * @param interesting character designated to mark the end of the data
-   */
-  public byte[] readBytesUntil(int interesting) {
-    if (bufferIndex == bufferLast) return null;
-    byte what = (byte)interesting;
-
-    synchronized (buffer) {
-      int found = -1;
-      for (int k = bufferIndex; k < bufferLast; k++) {
-        if (buffer[k] == what) {
-          found = k;
-          break;
-        }
-      }
-      if (found == -1) return null;
-
-      int length = found - bufferIndex + 1;
-      byte outgoing[] = new byte[length];
-      System.arraycopy(buffer, bufferIndex, outgoing, 0, length);
-
-      bufferIndex += length;
-      if (bufferIndex == bufferLast) {
-        bufferIndex = 0; // rewind
-        bufferLast = 0;
-      }
-      return outgoing;
-    }
-  }
-
-
-  /**
-   * <h3>Advanced</h3>
-   * Reads from the serial port into a buffer of bytes until a
-   * particular character. If the character isn't in the serial
-   * buffer, then 'null' is returned.
-   *
-   * If outgoing[] is not big enough, then -1 is returned,
-   *   and an error message is printed on the console.
-   * If nothing is in the buffer, zero is returned.
-   * If 'interesting' byte is not in the buffer, then 0 is returned.
-   * 
-   * @param byteBuffer passed in byte array to be altered
-   */
-  public int readBytesUntil(int interesting, byte byteBuffer[]) {
-    if (bufferIndex == bufferLast) return 0;
-    byte what = (byte)interesting;
-
-    synchronized (buffer) {
-      int found = -1;
-      for (int k = bufferIndex; k < bufferLast; k++) {
-        if (buffer[k] == what) {
-          found = k;
-          break;
-        }
-      }
-      if (found == -1) return 0;
-
-      int length = found - bufferIndex + 1;
-      if (length > byteBuffer.length) {
-        System.err.println("readBytesUntil() byte buffer is" +
-                           " too small for the " + length +
-                           " bytes up to and including char " + interesting);
-        return -1;
-      }
-
-      System.arraycopy(buffer, bufferIndex, byteBuffer, 0, length);
-
-      bufferIndex += length;
-      if (bufferIndex == bufferLast) {
-        bufferIndex = 0;  // rewind
-        bufferLast = 0;
-      }
-      return length;
-    }
-  }
-
-
-  /**
-   *
-   * Returns the all the data from the buffer as a String. This method 
-   * assumes the incoming characters are ASCII. If you want to transfer 
-   * Unicode data, first convert the String to a byte stream in the 
-   * representation of your choice (i.e. UTF8 or two-byte Unicode data), and 
-   * send it as a byte array.
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief Returns the buffer as a String
-   */
-  public String readString() {
-    if (bufferIndex == bufferLast) return null;
-    return new String(readBytes());
-  }
-
-
-  /**
-   *
-   * Combination of <b>readBytesUntil()</b> and <b>readString()</b>. Returns 
-   * <b>null</b> if it doesn't find what you're looking for.
-   * 
-   * <h3>Advanced</h3>
-   * <p/>
-   * If you want to move Unicode data, you can first convert the
-   * String to a byte stream in the representation of your choice
-   * (i.e. UTF8 or two-byte Unicode data), and send it as a byte array.
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief Returns the buffer as a String up to and including a particular character
-   * @param interesting character designated to mark the end of the data
-   */
-  public String readStringUntil(int interesting) {
-    byte b[] = readBytesUntil(interesting);
-    if (b == null) return null;
-    return new String(b);
-  }
-
-
-  /**
-   *
-   * Writes data to a server specified when constructing the client.
-   * 
-   * @webref client:client
-   * @usage application
-   * @brief  	Writes bytes, chars, ints, bytes[], Strings
-   * @param data data to write
-   */
-  public void write(int data) {  // will also cover char
-    try {
-      output.write(data & 0xff);  // for good measure do the &
-      output.flush();   // hmm, not sure if a good idea
-
-    } catch (Exception e) { // null pointer or serial port dead
-      e.printStackTrace();
-      stop();
-    }
-  }
-
 
   public void write(byte data[]) {
     try {

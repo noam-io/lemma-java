@@ -32,11 +32,12 @@ public class Lemma {
         initialize(parent, lemmaID, desiredServerName);
     }
 
-    public void initialize (Object parent, String lemmaID, String desiredServerName) {
+    private void initialize (Object parent, String lemmaID, String desiredServerName) {
         if(this.isValidLemmaId(lemmaID)){
             this.parent = parent;
             eventServer = new TCPServer(parent, 0);
-            this.tcpListenPort = eventServer.server.getLocalPort();
+            eventServer.start();
+            this.tcpListenPort = eventServer.getLocalPort();
 
             moderatorLocator = new ModeratorLocator(lemmaID, desiredServerName);
             messageSender = new MessageSender(lemmaID);
@@ -64,8 +65,8 @@ public class Lemma {
     }
 
     public void run() {
-        tryConnectingToModerator();
-        handleIncomingConnections();
+       tryConnectingToModerator();
+       handleIncomingConnections();
     }
 
     private void tryConnectingToModerator() {
@@ -149,8 +150,10 @@ public class Lemma {
 
     public void stop() {
         moderatorLocator.close();
-        eventServer.stop();
+        eventServer.interrupt();
         moderatorClient.stop();
+        logger.info("Lemma stopped. Noam is disconnected!");
+
     }
 
     public boolean connected() {
@@ -159,5 +162,11 @@ public class Lemma {
 
     private boolean isValidLemmaId(String lemmaId){
         return Pattern.matches("^[a-zA-Z_][a-zA-Z0-9_]*$", lemmaId);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        stop();
+        super.finalize();
     }
 }
