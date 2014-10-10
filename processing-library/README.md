@@ -45,7 +45,7 @@ Lemma lemma;
 int messagesSent = 1;
 
 void setup(){
-  lemma = new Lemma(this, "test", 1030, 8833);
+   lemma = new Lemma(this, "lemmaID", "Desired Room");
   // Listen for an Event
   lemma.hear("messagesSent", new MyEventHandler());
 }
